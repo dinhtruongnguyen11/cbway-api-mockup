@@ -24,7 +24,7 @@ SECRET_KEY = "secret_key"
 
 # Mock user data
 users_db = {
-    "0901234567": {"name": "User A", "password": "password123"}
+    "0901234567": {"name": "User A", "password": "password123","current_balance":22000000}
 }
 
 # OAuth2 scheme
@@ -42,8 +42,9 @@ class Token(BaseModel):
 
 # User details response model
 class User(BaseModel):
-    full_name: str
-    phone_number: str
+        full_name: str
+        phone_number: str
+        current_balance: int
 
 
 # Feature list response model
@@ -107,7 +108,9 @@ def get_current_user(token: str = Depends(oauth2_scheme)):
         phone_number = payload.get("sub")
         if phone_number is None:
             raise HTTPException(status_code=401, detail="Invalid authentication credentials")
-        return {"phone_number": phone_number, "full_name": users_db[phone_number]["name"]}
+        return {"phone_number": phone_number,
+                "full_name": users_db[phone_number]["name"],
+                "current_balance": users_db[phone_number]["current_balance"]}
     except jwt.PyJWTError:
         raise HTTPException(status_code=401, detail="Invalid authentication credentials")
 
